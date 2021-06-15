@@ -38,8 +38,10 @@ void Graph::setSize(size_t n)
 {
   // If the graph is being made smaller we first need to remove all of the edges
   // from the soon to be removed vertices.
-  for (size_t i = n; i < m_adjacencyList.size(); i++)
+  for (size_t i = n; i < m_adjacencyList.size(); i++) {
     removeEdges(i);
+    uniqueGroup.removeElement(i);
+  }
 
   m_adjacencyList.resize(n);
 }
@@ -57,10 +59,12 @@ bool Graph::isEmpty() const
 void Graph::clear()
 {
   setSize(0);
+  uniqueGroup.clear();
 }
 
 size_t Graph::addVertex()
 {
+  uniqueGroup.addElement(size() + 1);
   setSize(size() + 1);
   return size() - 1;
 }
@@ -68,7 +72,7 @@ size_t Graph::addVertex()
 void Graph::removeVertex(size_t index)
 {
   assert(index < size());
-
+  uniqueGroup.removeConection(index);
   // Remove the edges to the vertex.
   removeEdges(index);
 
@@ -85,13 +89,14 @@ void Graph::addEdge(size_t a, size_t b)
 {
   assert(a < size());
   assert(b < size());
-
   std::vector<size_t>& neighborsA = m_adjacencyList[a];
   std::vector<size_t>& neighborsB = m_adjacencyList[b];
 
   // Ensure edge does not exist already.
   if (std::find(neighborsA.begin(), neighborsA.end(), b) != neighborsA.end())
     return;
+
+  uniqueGroup.addConection(a, b);
 
   // Add the edge to each verticies adjacency list.
   neighborsA.push_back(b);
@@ -106,6 +111,8 @@ void Graph::removeEdge(size_t a, size_t b)
   std::vector<size_t>& neighborsA = m_adjacencyList[a];
   std::vector<size_t>& neighborsB = m_adjacencyList[b];
 
+  uniqueGroup.removeConection(a, neighborsA, b, neighborsB);
+
   std::vector<size_t>::iterator iter =
     std::find(neighborsA.begin(), neighborsA.end(), b);
 
@@ -117,12 +124,14 @@ void Graph::removeEdge(size_t a, size_t b)
 
 void Graph::removeEdges()
 {
+  uniqueGroup.removeConections();
   for (size_t i = 0; i < m_adjacencyList.size(); ++i)
     m_adjacencyList[i].clear();
 }
 
 void Graph::removeEdges(size_t index)
 {
+  uniqueGroup.removeConection(index);
   const std::vector<size_t>& nbrs = m_adjacencyList[index];
 
   for (size_t i = 0; i < nbrs.size(); ++i) {
@@ -165,60 +174,15 @@ bool Graph::containsEdge(size_t a, size_t b) const
   return std::find(neighborsA.begin(), neighborsA.end(), b) != neighborsA.end();
 }
 
-std::vector<std::vector<size_t>> Graph::connectedComponents() const
+std::vector<std::set<size_t>> Graph::connectedComponents() const
 {
-  std::vector<std::vector<size_t>> components;
+    return uniqueGroup.getAllGroups();
+}
 
-  // Position of next vertex to the root of the depth-first search.
-  size_t position = 0;
-
-  // The bitset containing each vertex that has been visited.
-  std::vector<bool> visited(size());
-
-  for (;;) {
-    std::vector<size_t> component(size());
-    std::vector<size_t> row;
-    row.push_back(position);
-
-    while (!row.empty()) {
-      std::vector<size_t> nextRow;
-
-      for (size_t i = 0; i < row.size(); i++) {
-        size_t vertex = row[i];
-
-        // Add vertex to the component.
-        component.push_back(vertex);
-
-        // Mark the vertex as visited.
-        visited[vertex] = true;
-
-        // Iterate through each neighbor.
-        const std::vector<size_t>& nbrs = m_adjacencyList[vertex];
-        for (size_t j = 0; j < nbrs.size(); ++j)
-          if (visited[nbrs[j]] == false)
-            nextRow.push_back(nbrs[j]);
-      }
-      row = nextRow;
-    }
-
-    // Add this component to the list of components.
-    components.push_back(component);
-
-    // Find the next unvisited vertex.
-    bool done = true;
-    for (size_t i = position + 1; i < size(); ++i) {
-      if (visited[i] == false) {
-        position = i;
-        done = false;
-        break;
-      }
-    }
-
-    if (done)
-      break;
-  }
-
-  return components;
+std::set<size_t> Graph::connectedComponent(size_t index) const
+{
+    size_t group = uniqueGroup.getGroup(index);
+    return uniqueGroup.getElements(group);
 }
 
 } // end Core namespace

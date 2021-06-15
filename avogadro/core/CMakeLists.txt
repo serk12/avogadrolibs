@@ -20,6 +20,7 @@ set(HEADERS
   atomtyper-inline.h
   avogadrocore.h
   basisset.h
+  bimap.h
   bond.h
   coordinateset.h
   coordinateblockgenerator.h
@@ -51,6 +52,7 @@ set(HEADERS
 )
 
 set(SOURCES
+  bimap.cpp
   coordinateblockgenerator.cpp
   crystaltools.cpp
   cube.cpp

@@ -19,6 +19,8 @@
 
 #include "avogadrocore.h"
 
+#include "bimap.h"
+
 #include <cstddef>
 #include <vector>
 
@@ -97,13 +99,19 @@ public:
   bool containsEdge(size_t a, size_t b) const;
 
   /**
-   * Returns a vector of vector containing the indicies of each vertex in each
+   * Returns a vector of set containing the indicies of each vertex in each
    * connected component in the graph.
    */
-  std::vector<std::vector<size_t>> connectedComponents() const;
+  std::vector<std::set<size_t>> connectedComponents() const;
+
+  /**
+   * Returns a set containing the indicies of each vertex connected in the graph.
+   */
+  std::set<size_t> connectedComponent(size_t index) const;
 
 private:
   std::vector<std::vector<size_t>> m_adjacencyList;
+  BiMap uniqueGroup;
 };
 
 } // end Core namespace
