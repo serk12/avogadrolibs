@@ -3,8 +3,8 @@
   This source code is released under the 3-Clause BSD License, (see "LICENSE").
 ******************************************************************************/
 
-#include "residue.h"
 #include "molecule.h"
+#include "residue.h"
 #include "residuedata.h"
 
 namespace Avogadro {
@@ -43,17 +43,17 @@ void Residue::addResidueAtom(std::string& name, Atom& atom)
   m_atomNameMap.insert(std::pair<std::string, Atom>(name, atom));
 }
 
-std::vector<Atom> Residue::residueAtoms()
+std::vector<Atom> Residue::residueAtoms() const
 {
   std::vector<Atom> res;
-  for (AtomNameMap::iterator it = m_atomNameMap.begin();
+  for (AtomNameMap::const_iterator it = m_atomNameMap.begin();
        it != m_atomNameMap.end(); ++it) {
     res.push_back(it->second);
   }
   return res;
 }
 
-Atom Residue::getAtomByName(std::string name)
+Atom Residue::getAtomByName(std::string name) const
 {
   Atom empty;
   auto search = m_atomNameMap.find(name);
@@ -88,7 +88,7 @@ void Residue::resolveResidueBonds(Molecule& mol)
   }
 }
 
-int Residue::getAtomicNumber(std::string name)
+int Residue::getAtomicNumber(std::string name) const
 {
   auto search = m_atomNameMap.find(name);
   if (search != m_atomNameMap.end()) {
@@ -96,6 +96,16 @@ int Residue::getAtomicNumber(std::string name)
   }
 
   return 0;
+}
+
+bool Residue::hasAtomByIndex(Index index) const
+{
+  for (const auto& atom : residueAtoms()) {
+    if (atom.index() == index) {
+      return true;
+    }
+  }
+  return false;
 }
 
 } // namespace Core

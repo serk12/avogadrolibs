@@ -44,15 +44,15 @@ public:
 
   virtual ~Residue();
 
-  inline std::string residueName() { return m_residueName; }
+  inline std::string residueName() const { return m_residueName; }
 
   inline void setResidueName(std::string& name) { m_residueName = name; }
 
-  inline Index residueId() { return m_residueId; }
+  inline Index residueId() const { return m_residueId; }
 
   inline void setResidueId(Index& number) { m_residueId = number; }
 
-  inline char chainId() { return m_chainId; }
+  inline char chainId() const { return m_chainId; }
 
   inline void setChainId(char& id) { m_chainId = id; }
 
@@ -60,21 +60,23 @@ public:
   void addResidueAtom(std::string& name, Atom& atom);
 
   /** \return a vector containing the atoms added to the residue */
-  std::vector<Atom> residueAtoms();
+  std::vector<Atom> residueAtoms() const;
 
   /** Sets bonds to atoms in the residue based on data from residuedata header
    */
   void resolveResidueBonds(Molecule& mol);
 
-  Atom getAtomByName(std::string name);
+  Atom getAtomByName(std::string name) const;
 
-  int getAtomicNumber(std::string name);
+  int getAtomicNumber(std::string name) const;
 
-  void setHeterogen(bool heterogen) { m_heterogen = heterogen;}
+  bool hasAtomByIndex(Index index) const;
+
+  void setHeterogen(bool heterogen) { m_heterogen = heterogen; }
 
   /** \return is this residue a heterogen (HET / HETATM)
    */
-  bool isHeterogen() { return m_heterogen; }
+  bool isHeterogen() const { return m_heterogen; }
 
 protected:
   std::string m_residueName;
