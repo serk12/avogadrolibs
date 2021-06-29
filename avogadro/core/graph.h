@@ -109,6 +109,11 @@ public:
    */
   std::set<size_t> connectedComponent(size_t index) const;
 
+  /**
+   * Get the group ID
+   */
+  size_t getConnectedID(size_t index) const;
+
 private:
   std::vector<std::vector<size_t>> m_adjacencyList;
   ConnectedGroup* connectedGroup;

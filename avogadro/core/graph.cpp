@@ -193,5 +193,10 @@ std::set<size_t> Graph::connectedComponent(size_t index) const
   return connectedGroup->getElements(group);
 }
 
+size_t Graph::getConnectedID(size_t index) const
+{
+  return m_connectedGroup.getGroup(index);
+}
+
 } // namespace Core
 } // namespace Avogadro
